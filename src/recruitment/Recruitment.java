@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package recruitment;
+import java.sql.SQLException;
 import java.util.Scanner;
 /**
  *
@@ -26,20 +27,10 @@ public class Recruitment {
     private void employer_menu() {
     
     }
-    public static void main(String[] args) {
-        System.out.println("Welcome! Who are you?");
-        System.out.println("1. An administrator\n2. An employee\n3. An employer\n4. Exit\nPlease enter [1-4]");
-        Recruitment r= new Recruitment();
-        int n = reader.nextInt();
-        
-        
-        switch(n)
-        {
-            case 1:r.admin_menu();break;
-            case 2:r.employee_menu();break;
-            case 3:r.employer_menu();break;
-            default:System.out.println("invalid");break;
-        }
+    public static void main(String[] args) throws SQLException {
+        System.out.print("kcods");
+      DBConnection db = new DBConnection();
+      db.admin_create();
 
     }
 
