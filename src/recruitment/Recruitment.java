@@ -15,54 +15,61 @@ public class Recruitment {
     static Scanner reader = new Scanner(System.in); 
     
     //Step One Question
-    void welcome_menu() { // DONE
+    void welcome_menu() {
     	System.out.println("Welcome! Who are you?");
     	System.out.println("1. An administrator\n2. An employee\n3. An employer\n4. Exit\nPlease enter [1-4].");
     
     
     	while (true) {
-    		int position_choice = reader.nextInt();
-    		
-    		
-    		switch(position_choice)
-    		{
+    		try {
+    		String position_choice = reader.next();
+    		switch(Integer.parseInt(position_choice)) {
         		case 1:admin_menu(); break;
         		case 2:employee_menu();break;
         		case 3:employer_menu();break;
-        		case 4:return;
+        		case 4:System.exit(0);
         		default:System.out.println("[ERROR] Invalid input.\nPlease enter [1-4].");break;
     		}
+    		} catch (NumberFormatException e) {
+    			System.out.println("[ERROR] Invalid input.\nPlease enter [1-4].");
+    		}
+    		
     	}
     		
     		
-    	}
+    	
     }
     //Step Two Question
     void admin_menu(){
         System.out.println("Administrator, what would you like to do");
-        System.out.println("1. Create tables\n2. Delete tables\n3. Load data\n4. Check data\n5. Go back\nPlease enter [1-5]");
+        System.out.println("1. Create tables\n2. Delete tables\n3. Load data\n4. Check data\n5. Go back\nPlease enter [1-5].");
         
         while (true) {
-        	int administrator_choice = reader.nextInt();
-        	switch(administrator_choice)
+        	try {
+        	String administrator_choice = reader.next();
+        	switch(Integer.parseInt(administrator_choice))
         	{
             	case 1:create_tables(); break;
             	case 2:delete_tables();break;
             	case 3:load_data();break;
             	case 4:check_data();break;
             	case 5:welcome_menu();break;
-            	
-            	default:System.out.println("[ERROR] Invalid input.\nPlease enter [1-4].");break;
+            	default:System.out.println("[ERROR] Invalid input.\nPlease enter [1-5].");break;
+        	}
+        	} catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease enter [1-5].");
         	}
         }
     }
+        
     private void employee_menu() {
     	System.out.println("Employee, what would you like to do");
         System.out.println("1. Show Available Positions\n2. Mark Interested Position\n3. Check Average Working Time\n4. Go Back\nPlease enter [1-4].");
 
         while (true) {
-        	int employee_choice = reader.nextInt();
-        	switch(employee_choice)
+        	try {
+        	String employee_choice = reader.next();
+        	switch(Integer.parseInt(employee_choice))
         	{
             	case 1:show_available_positions(); break;
             	case 2:mark_interested_position();break;
@@ -70,21 +77,30 @@ public class Recruitment {
             	case 4:welcome_menu();break;      	
             	default:System.out.println("[ERROR] Invalid input.\nPlease enter [1-4].");break;
         	}
+        	}
+        	catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease enter [1-4].");
+        	}
         }
     }
+    
     private void employer_menu() {
     	System.out.println("Employer, what would you like to do");
         System.out.println("1. Post Position Recruitment\n2. Check employees and arrange an interview\n3. Accept an employee\n4. Go Back\nPlease enter [1-4].");
 
         while (true) {
-        	int employer_choice = reader.nextInt();
-        	switch(employer_choice)
+        	try {
+        	String employer_choice = reader.next();
+        	switch(Integer.parseInt(employer_choice))
         	{
             	case 1:post_position_recruitment(); break;
             	case 2:check_empolyees_and_arrange_an_interview();break;
             	case 3:accept_an_employee();break;
             	case 4:welcome_menu();break;      	
             	default:System.out.println("[ERROR] Invalid input.\nPlease enter [1-4].");break;
+        	}
+        	} catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease enter [1-4].");
         	}
         }
     
@@ -111,7 +127,7 @@ public class Recruitment {
     	System.out.println("Please enter the folder path.");
     	String folder_path = reader.next();
     	
-    	//call : load data
+    	//call : load data from the user input folder
     	
     	System.out.println("Processing...Data is loaded!");
     	admin_menu();
@@ -120,7 +136,7 @@ public class Recruitment {
     private void check_data () {
     	System.out.println("Number of records in each table:");
     	
-    	//call : check data
+    	//call : check data (display the number of records of each tables
     	
     	admin_menu();
     	
@@ -129,7 +145,17 @@ public class Recruitment {
     //Step Two Action - Employee
     private void show_available_positions() {
     	System.out.println("Please enter your ID.");
-    	int employee_id = reader.nextInt();
+    	while (true) {
+    		try {
+    			String temp = reader.next();
+    			int employee_id = Integer.parseInt(temp);
+    			break;
+    		}
+    		catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
+        	}
+    	}
+    	
     	System.out.println("Your available poisition are:");
     	System.out.println("Position_ID, Position_Title, Salary Company, Size, Founded");
     	
@@ -141,15 +167,32 @@ public class Recruitment {
     
     private void mark_interested_position() {
     	System.out.println("Please enter your ID.");
-    	int employee_id = reader.nextInt();
+    	while (true) {
+    		try {
+    			String temp = reader.next(); 
+    			int employee_id = Integer.parseInt(temp);
+    			break;
+    		}
+    		catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
+        	}
+    	}
+    	
     	System.out.println("You interested poistions are:");
     	System.out.println("Position_ID, Position_Title, Salary Company, Size, Founded");
     	
     	// call : show all positions that the employee may be interested
     	
     	System.out.println("Please enter one interested Position_ID.");
-    	int interested_id = reader.nextInt();
-    	
+    	while (true) {
+    		try {
+    			String temp = reader.next();
+    			int interested_id = Integer.parseInt(temp);
+    			break;
+    		}catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease enter one interested Position_ID.");
+        	}
+    	}
     	// call : mark interested position
     	System.out.println("Done.");
     	
@@ -159,26 +202,72 @@ public class Recruitment {
     
     private void check_average_working_time() {
     	System.out.println("Please enter your ID.");
-    	int employee_id = reader.nextInt();
-    	System.out.print("You average working time is: ");
+    	while (true) {
+    		try {
+    			String temp = reader.next();
+    			int employee_id = Integer.parseInt(temp);
+    			break;
+    		} catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
+        	}
+    	}
     	
-    	// check average working time
     	
-    	System.out.println(".");
+    	// (if => 3 records)
+    	// System.out.print("You average working time is: .");
+    	
+    		// check average working time
+    	
+    	// (if less than 3 records)
+    	// System.out.println("Less than 3 records.");
+
+    	
     	employee_menu();
     }
  
     //Step Two Action - Employer
     private void post_position_recruitment() {
     	System.out.println("Please enter your ID.");
-    	int employer_id = reader.nextInt();
+    	while(true) {
+    		try {
+    			String temp = reader.next();			
+    			int employer_id = Integer.parseInt(temp);
+    			break;
+    		}catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
+        	}
+    	}
+    	
     	System.out.println("Please enter the position title.");
     	String position_title = reader.next();
-    	System.out.println("Please enter an upper bound of salary.");
-    	int upper_salary = reader.nextInt();
-    	System.out.println("Plase enter the required experience(press enter to skip).");
-    	String required_experience = reader.nextLine(); // 未做到SKIP個下
     	
+    	System.out.println("Please an upper bound of salary.");
+    	while(true) {
+    		try {
+    			String temp = reader.next();	
+    			int upper_salary = Integer.parseInt(temp);
+    			break;
+    		}catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease an upper bound of salary.");
+        	}
+    	}
+    	
+    	System.out.println("Please enter the required experience(press enter to skip.)");
+    	
+    	String stuff = reader.nextLine(); 
+    	//因為nextLine會計Enter鍵,但上面禁完enter 呢到都會計埋,所以自動跳左
+    	
+    	while(true) {
+    		try {
+    			String temp = reader.nextLine();
+    			if(temp.length() == 0) // skip this funciton
+    				break;
+    			int required_experience = Integer.parseInt(temp);
+    			break;
+    		} catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease enter the required experience(press enter to skip.)");
+        	}
+    	}
 
     	//呢到要改~~~~~~~~~~~ 點樣SKIP
     	
@@ -189,9 +278,8 @@ public class Recruitment {
     	
     	// (If no)
     	
-    	//return an error message for the employer
+    	//display an error message for the employer
     	//System.out.println("ERROR");
-    	//post_position_recruitment();
     	
     	employer_menu();
     	}
@@ -199,23 +287,47 @@ public class Recruitment {
     
     private void check_empolyees_and_arrange_an_interview() {
     	System.out.println("Please enter your ID.");
-    	int employer_id = reader.nextInt();
+    	while(true) {
+    		try {
+    			String temp = reader.next();
+    			int employer_id = Integer.parseInt(temp);
+    			break;
+    		} catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
+        	}
+    	}
+    	
     	System.out.println("The id of position recruitments posted by you are:");
     	
     	// show the position recruitments posted by you
     	
-    	System.out.println("Please pick one postion id.");
-    	int picked_position_id = reader.nextInt();
+    	System.out.println("Please pick one position id.");
+    	while(true) {
+    		try {
+    			String temp = reader.next();
+    			int picked_position_id = Integer.parseInt(temp);
+    			break;
+    		}catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease pick one position id.");
+        	}
+    	}
     	
     	System.out.println("The employees who mark interested in this position recruitment are:");
     	System.out.println("Employee_ID,Name,Expected_Salary,Experience,Skills");
     	
-    	// show the employees who mark interested in picked_id
+    	// show the employees who mark interested in picked_position_id
     	
     	System.out.println("Please pick one employee by Employee_ID.");
-    	int picked_employee_id = reader.nextInt();
-    	
-    	// 好似要取消? 一間睇
+    	while(true) {
+    		try {
+    			String temp = reader.next();
+    			int picked_employee_id = Integer.parseInt(temp);
+    			break;
+    		} catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease pick one employee by Employee_ID.");
+        	}
+    	}
+    	// 好似要取消record?  要interview 先可以accpet
     	
     	System.out.println("An IMMEDIATE interview has done.");
     	employer_menu();
@@ -224,13 +336,36 @@ public class Recruitment {
     
     private void accept_an_employee() {
     	System.out.println("Please enter your ID.");
-    	int employer_id = reader.nextInt();
+    	while(true) {
+    		try {
+    			String temp = reader.next();
+    			int employer_id = Integer.parseInt(temp);
+    			break;
+    		}catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
+        	}
+    	}
+    	
     	System.out.println("Please enter the Employee_ID you want to hire.");
-    	int hire_employee_id = reader.nextInt();
+    	while(true) {
+    		try {
+    			String temp = reader.next();
+    			int hire_employee_id = Integer.parseInt(temp);
+    			break;
+    		}catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease enter the Employee_ID you want to hire.");
+        	}
+    	}
+    	
+    	// check whether the employee is suitable or not (in左未)
+    	
+    	// (if OK)
     	System.out.println("An Employment History record is created, details are:");
     	System.out.println("Employee_ID, Company, Position_ID, Start, End");
-    	
     	// show the hire
+    	
+    	// (if no OK)
+    	// System.out.println("ERROR");
     	
     	employer_menu();
     }
@@ -238,15 +373,11 @@ public class Recruitment {
     //~~~~~~~~~~~~~~~~ 加油 ~~~~~~~~~~~~~~~~~~~~~~
     public static void main(String[] args) {
     	Recruitment r= new Recruitment();
+    	
     	r.welcome_menu();
        
         return;
-        
-
+   
     }
 
- 
-
-   
-    
 }
