@@ -3,8 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package recruitment;
+
+import java.sql.SQLException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author tommylee
@@ -13,7 +16,7 @@ import java.util.Scanner;
 public class Recruitment {
      //position of the user
     static Scanner reader = new Scanner(System.in); 
-    
+    DBConnection db;
     //Step One Question
     void welcome_menu() {
     	System.out.println("Welcome! Who are you?");
@@ -35,7 +38,6 @@ public class Recruitment {
     		}
     		
     	}
-    		
     		
     	
     }
@@ -109,36 +111,69 @@ public class Recruitment {
     //Step Two Action - Administrator
     private void create_tables() {
     	
-    	//call : create table
-    	
-    	System.out.println("Processing...Done! Tables are created!");
+        try {
+            //call : create table
+            db= new DBConnection();
+            
+            db.admin_create();
+               System.out.println("Processing...Done! Tables are created!");
     	admin_menu();
+        } catch (SQLException ex) {
+            Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+        }
+           
+        
     }
     
     private void delete_tables() {
     	
     	//call : delete table
+    
+        try {
+            db = new DBConnection();
+            db.admin_remove();
+            System.out.println("Processing...Done! Tables are deleted!");
+            admin_menu();
+        } catch (SQLException ex) {
+            Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+            
     	
-    	System.out.println("Processing...Done! Tables are deleted!");
-    	admin_menu();
     }
     
     private void load_data () {
-    	System.out.println("Please enter the folder path.");
+        System.out.println("Please enter the folder path.");
     	String folder_path = reader.next();
+        try {
+            db = new DBConnection();
+            db.admin_load_data();
+            System.out.println("Processing...Data is loaded!");
+            admin_menu();
+        } catch (SQLException ex) {
+            Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     	
+        
     	//call : load data from the user input folder
     	
-    	System.out.println("Processing...Data is loaded!");
-    	admin_menu();
+
     }
+
     
     private void check_data () {
     	System.out.println("Number of records in each table:");
-    	
+    	try {
+            db = new DBConnection();
+            db.admin_check_table();
+            admin_menu();
+        } catch (SQLException ex) {
+            Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     	//call : check data (display the number of records of each tables
     	
-    	admin_menu();
     	
     }
     
@@ -240,6 +275,7 @@ public class Recruitment {
     	
     	System.out.println("Please enter the position title.");
     	String position_title = reader.next();
+
     	
     	System.out.println("Please an upper bound of salary.");
     	while(true) {
@@ -255,7 +291,7 @@ public class Recruitment {
     	System.out.println("Please enter the required experience(press enter to skip.)");
     	
     	String stuff = reader.nextLine(); 
-    	//¦]¬°nextLine·|­pEnterÁä,¦ý¤W­±¸T§¹enter ©O¨ì³£·|­p®I,©Ò¥H¦Û°Ê¸õ¥ª
+    	//ï¿½]ï¿½ï¿½nextLineï¿½|ï¿½pEnterï¿½ï¿½,ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½Tï¿½ï¿½enter ï¿½Oï¿½ì³£ï¿½|ï¿½pï¿½I,ï¿½Ò¥Hï¿½Û°Ê¸ï¿½ï¿½ï¿½
     	
     	while(true) {
     		try {
@@ -269,7 +305,7 @@ public class Recruitment {
         	}
     	}
 
-    	//©O¨ì­n§ï~~~~~~~~~~~ ÂI¼ËSKIP
+    	//ï¿½Oï¿½ï¿½nï¿½ï¿½~~~~~~~~~~~ ï¿½Iï¿½ï¿½SKIP
     	
     	// (If at least 1 potential employee.)
     	
@@ -318,6 +354,7 @@ public class Recruitment {
     	// show the employees who mark interested in picked_position_id
     	
     	System.out.println("Please pick one employee by Employee_ID.");
+
     	while(true) {
     		try {
     			String temp = reader.next();
@@ -327,8 +364,6 @@ public class Recruitment {
         		System.out.println("[ERROR] Invalid input.\nPlease pick one employee by Employee_ID.");
         	}
     	}
-    	// ¦n¦ü­n¨ú®ørecord?  ­ninterview ¥ý¥i¥Haccpet
-    	
     	System.out.println("An IMMEDIATE interview has done.");
     	employer_menu();
     	
@@ -357,7 +392,7 @@ public class Recruitment {
         	}
     	}
     	
-    	// check whether the employee is suitable or not (in¥ª¥¼)
+    	// check whether the employee is suitable or not (inï¿½ï¿½ï¿½ï¿½)
     	
     	// (if OK)
     	System.out.println("An Employment History record is created, details are:");
@@ -370,9 +405,10 @@ public class Recruitment {
     	employer_menu();
     }
 
-    //~~~~~~~~~~~~~~~~ ¥[ªo ~~~~~~~~~~~~~~~~~~~~~~
+    //~~~~~~~~~~~~~~~~ ï¿½[ï¿½o ~~~~~~~~~~~~~~~~~~~~~~
     public static void main(String[] args) {
     	Recruitment r= new Recruitment();
+
     	
     	r.welcome_menu();
        
