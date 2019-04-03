@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package recruitment;
 import java.sql.*;
 /**
  *
@@ -126,7 +125,6 @@ public class DBConnection {
            ResultSet hist= emp_hist.executeQuery();
            ResultSet mark= marked.executeQuery();
            
-           System.out.println("\nNumber of records in each table:");
            if(com.next()){
            System.out.println("Company:"+com.getInt(1));
            }
