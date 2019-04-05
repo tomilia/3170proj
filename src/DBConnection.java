@@ -162,6 +162,7 @@ public class DBConnection {
         //insert
     }
     public void employee_avg_time(){
+        
         //select avg
     }
 }
