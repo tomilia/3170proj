@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author tommylee
@@ -73,41 +75,50 @@ public class DBConnection {
     
     stmt.close();
     }
-    public void admin_load_data() throws SQLException{
-        conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
-        stmt = conn.createStatement();
-     String company="LOAD DATA LOCAL INFILE 'test_data/company.csv' INTO TABLE Company\n" +
-"FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
-"LINES TERMINATED BY '\\n'\n" +
-";";
-     
-     stmt.executeUpdate(company);
-     String employee="LOAD DATA LOCAL INFILE 'test_data/employee.csv' INTO TABLE Employee\n" +
-"FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
-"LINES TERMINATED BY '\\n'\n" +
-";";
-     
-     stmt.executeUpdate(employee);
-      String employer="LOAD DATA LOCAL INFILE 'test_data/employer.csv' INTO TABLE Employer\n" +
-"FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
-"LINES TERMINATED BY '\\n'\n" +
-";";
-     
-     stmt.executeUpdate(employer);
-     String position="LOAD DATA LOCAL INFILE 'test_data/position.csv' INTO TABLE _Position\n" +
-"FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
-"LINES TERMINATED BY '\\n'\n" +
-"(Position_ID,Position_Title,Salary,Experience,Employer_ID,@Status)\n" +
-"SET Status = (@Status = 'TRUE');";
-     
-     stmt.executeUpdate(position);
-      String emp_hist="LOAD DATA LOCAL INFILE 'test_data/history.csv' INTO TABLE Employment_History\n" +
-"FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
-"LINES TERMINATED BY '\\n'\n" +
-";";
-     
-     stmt.executeUpdate(emp_hist);
-    stmt.close();
+    public int admin_load_data(String path) {
+        try {
+            conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword);
+            stmt = conn.createStatement();
+            PreparedStatement company=conn.prepareStatement("LOAD DATA LOCAL INFILE ? INTO TABLE Company\n" +
+                    "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
+                    "LINES TERMINATED BY '\\n'\n" +
+                    ";");
+            company.setString(1,"'"+path+"/company.csv'");
+            company.executeQuery();
+            
+            PreparedStatement employee=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/employee.csv' INTO TABLE Employee\n" +
+                    "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
+                    "LINES TERMINATED BY '\\n'\n" +
+                    ";");
+            employee.setString(1,"'"+path+"/employee.csv'");
+            employee.executeQuery();
+            PreparedStatement employer=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/employer.csv' INTO TABLE Employer\n" +
+                    "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
+                    "LINES TERMINATED BY '\\n'\n" +
+                    ";");
+            
+            employer.setString(1,"'"+path+"/employer.csv'");
+            employer.executeQuery();
+            PreparedStatement position=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/position.csv' INTO TABLE _Position\n" +
+                    "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
+                    "LINES TERMINATED BY '\\n'\n" +
+                    "(Position_ID,Position_Title,Salary,Experience,Employer_ID,@Status)\n" +
+                    "SET Status = (@Status = 'TRUE');");
+            
+            position.setString(1, "'"+path+"/position.csv'");
+            position.executeQuery();
+            PreparedStatement emp_hist=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/history.csv' INTO TABLE Employment_History\n" +
+                    "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
+                    "LINES TERMINATED BY '\\n'\n" +
+                    ";");
+            emp_hist.setString(1, "'"+path+"/history.csv'");
+            emp_hist.executeQuery();
+            stmt.close();
+            return 1;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return -1;
+        }
     }
     public void admin_check_table() throws SQLException{
         conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
@@ -124,7 +135,7 @@ public class DBConnection {
            ResultSet pos= position.executeQuery();
            ResultSet hist= emp_hist.executeQuery();
            ResultSet mark= marked.executeQuery();
-           
+            
            if(com.next()){
            System.out.println("Company:"+com.getInt(1));
            }
