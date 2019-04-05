@@ -163,6 +163,7 @@ public class Recruitment {
 
     
     private void check_data () {
+        
     	System.out.println("Number of records in each table:");
     	try {
             db = new DBConnection();
@@ -179,57 +180,105 @@ public class Recruitment {
     
     //Step Two Action - Employee
     private void show_available_positions() {
+        int checkvalid=0;
     	System.out.println("Please enter your ID.");
+        String employee_id;
     	while (true) {
     		try {
-    			String temp = reader.next();
-    			int employee_id = Integer.parseInt(temp);
+    			employee_id = reader.next();
+    		         
     			break;
     		}
     		catch (NumberFormatException e) {
         		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
         	}
     	}
-    	
-    	System.out.println("Your available poisition are:");
-    	System.out.println("Position_ID, Position_Title, Salary Company, Size, Founded");
-    	
+        while (true){
+            try {   
+                db = new DBConnection();
+                checkvalid=db.check_valid_employee(employee_id);
+                break;
+            } catch (SQLException ex) {
+                Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        if(checkvalid==1){
+            try {   
+                db.employee_check_ava(employee_id);
+                employee_menu();
+             } catch (SQLException ex) {
+            Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+        }
     	// call : show available positions
-    	
-    	employee_menu();
-    	
+        }
+        else{
+            System.out.println("[ERROR] no employee found.\n");
+            employee_menu();
+        }
+            
     }
     
     private void mark_interested_position() {
+        int returnvalue=0;
+        int checkvalid=0;
     	System.out.println("Please enter your ID.");
+        String employee_id,position_id;
     	while (true) {
     		try {
-    			String temp = reader.next(); 
-    			int employee_id = Integer.parseInt(temp);
+    			employee_id = reader.next();
+    		         
     			break;
     		}
     		catch (NumberFormatException e) {
         		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
         	}
     	}
-    	
-    	System.out.println("You interested poistions are:");
-    	System.out.println("Position_ID, Position_Title, Salary Company, Size, Founded");
+        while (true){
+            try {   
+                db = new DBConnection();
+                checkvalid=db.check_valid_employee(employee_id);
+                break;
+            } catch (SQLException ex) {
+                Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if(checkvalid==1){
+            try {   
+                db = new DBConnection();
+                returnvalue=db.employee_mark_pos(employee_id);
+            } catch (SQLException ex) {
+              Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if(returnvalue==1){
+                System.out.println("Please one interested position id:");
+        
+                while (true) {
+                    try {
+                        position_id = reader.next();
+    		         
+    			break;
+                    }
+                    catch (NumberFormatException e) {
+        		System.out.println("[ERROR] Invalid input.\nPlease enter your position ID.");
+                    }
+                }
+  
+                try {   
+                     db.insert_mark_pos(position_id,employee_id);
+                    employee_menu();
+                } catch (SQLException ex) {
+                    Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        else{
+            System.out.println("[ERROR] no employee found.\n");
+            employee_menu();
+        }
+    
     	
     	// call : show all positions that the employee may be interested
-    	
-    	System.out.println("Please enter one interested Position_ID.");
-    	while (true) {
-    		try {
-    			String temp = reader.next();
-    			int interested_id = Integer.parseInt(temp);
-    			break;
-    		}catch (NumberFormatException e) {
-        		System.out.println("[ERROR] Invalid input.\nPlease enter one interested Position_ID.");
-        	}
-    	}
-    	// call : mark interested position
-    	System.out.println("Done.");
     	
     	employee_menu();
     	
@@ -246,17 +295,11 @@ public class Recruitment {
         		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
         	}
     	}
-    	
-    	
     	// (if => 3 records)
     	// System.out.print("You average working time is: .");
-    	
-    		// check average working time
-    	
+        // check average working time
     	// (if less than 3 records)
     	// System.out.println("Less than 3 records.");
-
-    	
     	employee_menu();
     }
  
@@ -368,7 +411,7 @@ public class Recruitment {
     	employer_menu();
     	
     }
-    
+
     private void accept_an_employee() {
     	System.out.println("Please enter your ID.");
     	while(true) {
