@@ -163,6 +163,7 @@ public class Recruitment {
 
     
     private void check_data () {
+        
     	System.out.println("Number of records in each table:");
     	try {
             db = new DBConnection();
@@ -180,23 +181,26 @@ public class Recruitment {
     //Step Two Action - Employee
     private void show_available_positions() {
     	System.out.println("Please enter your ID.");
+        String employee_id;
     	while (true) {
     		try {
-    			String temp = reader.next();
-    			int employee_id = Integer.parseInt(temp);
+    			employee_id = reader.next();
+    		         
     			break;
     		}
     		catch (NumberFormatException e) {
         		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
         	}
     	}
-    	
-    	System.out.println("Your available poisition are:");
-    	System.out.println("Position_ID, Position_Title, Salary Company, Size, Founded");
-    	
+        
+        try {   
+            db = new DBConnection();
+            db.employee_check_ava(employee_id);
+            employee_menu();
+        } catch (SQLException ex) {
+            Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+        }
     	// call : show available positions
-    	
-    	employee_menu();
     	
     }
     
@@ -238,13 +242,17 @@ public class Recruitment {
     private void check_average_working_time() {
     	System.out.println("Please enter your ID.");
     	while (true) {
-    		try {
-    			String temp = reader.next();
-    			int employee_id = Integer.parseInt(temp);
+                try {
+                    String temp = reader.next();
+                    String employee_id = temp;
+                    db = new DBConnection();
+                    db.employee_avg_time(employee_id);
+                }
+                     catch (SQLException ex) {
+                    Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+                }   
     			break;
-    		} catch (NumberFormatException e) {
-        		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
-        	}
+    		
     	}
     	
     	

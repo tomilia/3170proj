@@ -24,7 +24,7 @@ public class DBConnection {
             
             //Get a connection
             conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
-            System.out.print("Connection created.");
+            System.out.println("Connection created.");
             conn.close();
         }   
         catch (Exception except)
@@ -155,13 +155,76 @@ public class DBConnection {
            System.out.println("Marked:"+mark.getInt(1));
            }
     }
-    public void employee_check_ava(){
+    
+    public void employee_check_ava(String employee_id)throws SQLException{
+        int Expected_Salary=0, Experience=0;
+        String Name,Skills;
+        conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
+        stmt = conn.createStatement();
+        String psql_employee = "SELECT * FROM Employee WHERE Employee_ID=?";
+        PreparedStatement pstmt1=conn.prepareStatement(psql_employee);
+        pstmt1.setString(1,employee_id);
+        ResultSet rs = pstmt1.executeQuery();
+        if (rs.next()){
+            Name = rs.getString("Name");
+            Expected_Salary = rs.getInt("Expected_Salary");
+            Experience = rs.getInt("Experience");
+            Skills = rs.getString("Skills");
+            System.out.println("You are employee:"+Name+Expected_Salary+Experience+Skills+"\n");
+            
+        }
+        
+        //SELECT Position_ID,Position_Title,Salary FROM _Position NATURAL JOIN Employer NATURAL JOIN Company WHERE Status =? and Salary >=? and Experience <=?
+        String psql_position ="SELECT Position_ID,Position_Title,Salary,Company,Size,Founded FROM _Position NATURAL JOIN Employer NATURAL JOIN Company WHERE Status =? and Salary >=? and Experience <=?";
+        PreparedStatement pstmt2=conn.prepareStatement(psql_position);
+        pstmt2.setInt(1,1);
+        pstmt2.setInt(2,Expected_Salary);
+        pstmt2.setInt(3,Experience);
+        ResultSet rs2 = pstmt2.executeQuery();
+        while (rs2.next()){
+            String Position_ID = rs2.getString("Position_ID");
+            String Position_Title = rs2.getString("Position_Title");
+            int Salary= rs2.getInt("Salary");
+            String Company = rs2.getString("Company");
+            int Size= rs2.getInt("Size");
+            int Founded= rs2.getInt("Founded");
+            System.out.println(Position_ID+","+Position_Title+","+ Salary+Company+Size+Founded+"\n");
+            
+        }
+        System.out.println("Your available position are:\n");
+    	System.out.println("Position_ID, Position_Title, Salary Company, Size, Founded\n");
+         stmt.close();
         //select
     }
     public void employee_mark_pos(){
+        
         //insert
     }
-    public void employee_avg_time(){
+
+    public void employee_avg_time(String employee_id){
+        try { 
+            conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword);
+            PreparedStatement totaldays = conn.prepareStatement("select DATEDIFF(End, Start) as totaldays from Employment_History where Employee_ID=? and End IS NOT NULL order by Convert(End,datetime) desc limit 3;");
+            totaldays.setString(1, employee_id);
+            ResultSet rs = totaldays.executeQuery();
+            int days=0;
+            int counter=0;
+           
+            while(rs.next())
+            {
+                counter++;
+                String vac=rs.getString("totaldays");
+                days+=Integer.parseInt(vac);
+            }
+            if(counter<3)
+            {
+                System.out.println("Not enough record(s) found");
+                return;
+            }
+            System.out.println("Your average working time is: "+days/counter+" days.");
+        } catch (SQLException ex) {
+            Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         //select avg
     }
