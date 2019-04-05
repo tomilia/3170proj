@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 import java.sql.*;
+import java.util.Random; //暫用
 /**
  *
  * @author tommylee
@@ -22,7 +23,7 @@ public class DBConnection {
             
             //Get a connection
             conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
-            System.out.print("Connection created.");
+            System.out.println("Connection created.");
             conn.close();
         }   
         catch (Exception except)
@@ -153,4 +154,92 @@ public class DBConnection {
     public void employee_avg_time(){
         //select avg
     }
+    
+    
+    public void employer_post_rec(String employer_id,String position_title,int upper_salary,int required_experience) throws SQLException{
+        
+        conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
+        stmt = conn.createStatement();
+        //required_experience default -> 0                           If employee haven't worked , it will not count , but we should count
+        String countEmployee = "SELECT COUNT(DISTINCT E.Employee_ID) FROM Employee E , Employment_History H WHERE E.Employee_ID = H.Employee_ID AND H.End IS NOT NULL AND E.Expected_Salary <= ? AND E.Experience >= ? AND E.Skills LIKE CONCAT('%' , ? , '%')"; 
+        PreparedStatement pstmt = conn.prepareStatement(countEmployee);
+        
+        Random rand = new Random();
+        pstmt.setInt(1, upper_salary);
+        pstmt.setInt(2, required_experience);
+        pstmt.setString(3,  position_title);
+        ResultSet number = pstmt.executeQuery();
+        
+        if(!(number.next()) || number.getInt(1) == 0) {
+        	System.out.println("ERROR MESSAGE");
+        }
+        else {
+        	 
+        	//無ERROR 但未insert到!!!!!!!!!!!!!!!!!!!!
+        	String insertPost = "INSERT INTO _Position (Employer_ID, Position_Title, Salary, Experience, Status, Position_ID) VALUES (?,?,?,?,1,?)";
+             PreparedStatement pstmt2 = conn.prepareStatement(insertPost);
+             pstmt2.setString(1, employer_id);
+             pstmt2.setString(2, position_title);
+             pstmt2.setInt(3,upper_salary);
+             pstmt2.setInt(4, required_experience);
+             pstmt2.setInt(5, rand.nextInt(999999)); //暫用去 random 個position_id
+             
+        	System.out.println(number.getInt(1)+" potential employees are found. The position recruiment is posted.");
+    	}
+    	
+    		
+    	}
+    	
+    
+    public void employer_checkPosition(String employer_id) throws SQLException{ //DONE!!
+    	conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
+        stmt = conn.createStatement();
+        String checkPosition ="SELECT P.Position_ID FROM _Position P WHERE P.Employer_ID = ?";
+        PreparedStatement pstmt = conn.prepareStatement(checkPosition);
+        pstmt.setString(1, employer_id);
+        ResultSet checkedPosition = pstmt.executeQuery();
+        System.out.println("");
+        while(checkedPosition.next()) {
+        	System.out.println(checkedPosition.getString(1));
+        }
+    }
+    
+    public void employer_show_employee_interested(String picked_position_id) throws SQLException { //DONE!!!!!!!!!!
+    	conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
+        stmt = conn.createStatement();
+        String showEmployee_interested = "SELECT E.* FROM Marked M, Employee E WHERE M.Position_ID = ? AND M.Employee_ID = E.Employee_ID";
+        PreparedStatement pstmt = conn.prepareStatement(showEmployee_interested);
+        pstmt.setString(1,picked_position_id);
+        ResultSet interested_Employee = pstmt.executeQuery();
+        while(interested_Employee.next()) {
+        	System.out.print(interested_Employee.getString(1)+", ");
+        	System.out.print(interested_Employee.getString(2)+", ");
+        	System.out.print(interested_Employee.getInt(3)+", ");
+        	System.out.print(interested_Employee.getInt(4)+", ");
+        	System.out.println(interested_Employee.getString(5));
+        }
+        
+    }
+    
+    public void employer_createRecord(String employer_id,String hire_employee_id) throws SQLException {
+    	conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
+        stmt = conn.createStatement();
+        String theCompany ="";
+        String searchCompany = "SELECT Company FROM Employer E WHERE E.Employer_ID = ?";
+        PreparedStatement pstmt = conn.prepareStatement(searchCompany);
+        pstmt.setString(1, employer_id);
+        ResultSet resultCompany = pstmt.executeQuery();
+        if (resultCompany.next()) {
+        	theCompany = resultCompany.getString(1);
+        }
+
+        
+        String createRecord = "INSERT INTO Employment_History VALUES (?,?,?,?,NULL)";
+        PreparedStatement pstmt2 = conn.prepareStatement(createRecord);
+        pstmt2.setString(1,hire_employee_id);
+        pstmt2.setString(2, theCompany);
+        pstmt2.setDate(4, new java.sql.Date(System.currentTimeMillis()));
+        
+    }
+   
 }
