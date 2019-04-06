@@ -147,7 +147,7 @@ public class Recruitment {
     	String folder_path = reader.next();
         try {
             db = new DBConnection();
-            db.admin_load_data();
+            db.admin_load_data(System.getProperty("user.dir")+"/"+folder_path);
             System.out.println("Processing...Data is loaded!");
             admin_menu();
         } catch (SQLException ex) {
@@ -193,6 +193,7 @@ public class Recruitment {
         		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
         	}
     	}
+
         while (true){
             try {   
                 db = new DBConnection();
@@ -287,13 +288,17 @@ public class Recruitment {
     private void check_average_working_time() {
     	System.out.println("Please enter your ID.");
     	while (true) {
-    		try {
-    			String temp = reader.next();
-    			int employee_id = Integer.parseInt(temp);
+                try {
+                    String temp = reader.next();
+                    String employee_id = temp;
+                    db = new DBConnection();
+                    db.employee_avg_time(employee_id);
+                }
+                     catch (SQLException ex) {
+                    Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+                }   
     			break;
-    		} catch (NumberFormatException e) {
-        		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
-        	}
+    		
     	}
     	// (if => 3 records)
     	// System.out.print("You average working time is: .");

@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author tommylee
@@ -22,7 +24,7 @@ public class DBConnection {
             
             //Get a connection
             conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
-            System.out.print("Connection created.");
+            System.out.println("Connection created.");
             conn.close();
         }   
         catch (Exception except)
@@ -73,41 +75,52 @@ public class DBConnection {
     
     stmt.close();
     }
-    public void admin_load_data() throws SQLException{
-        conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
-        stmt = conn.createStatement();
-     String company="LOAD DATA LOCAL INFILE 'test_data/company.csv' INTO TABLE Company\n" +
-"FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
-"LINES TERMINATED BY '\\n'\n" +
-";";
-     
-     stmt.executeUpdate(company);
-     String employee="LOAD DATA LOCAL INFILE 'test_data/employee.csv' INTO TABLE Employee\n" +
-"FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
-"LINES TERMINATED BY '\\n'\n" +
-";";
-     
-     stmt.executeUpdate(employee);
-      String employer="LOAD DATA LOCAL INFILE 'test_data/employer.csv' INTO TABLE Employer\n" +
-"FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
-"LINES TERMINATED BY '\\n'\n" +
-";";
-     
-     stmt.executeUpdate(employer);
-     String position="LOAD DATA LOCAL INFILE 'test_data/position.csv' INTO TABLE _Position\n" +
-"FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
-"LINES TERMINATED BY '\\n'\n" +
-"(Position_ID,Position_Title,Salary,Experience,Employer_ID,@Status)\n" +
-"SET Status = (@Status = 'TRUE');";
-     
-     stmt.executeUpdate(position);
-      String emp_hist="LOAD DATA LOCAL INFILE 'test_data/history.csv' INTO TABLE Employment_History\n" +
-"FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
-"LINES TERMINATED BY '\\n'\n" +
-";";
-     
-     stmt.executeUpdate(emp_hist);
-    stmt.close();
+    public int admin_load_data(String path) {
+        try {
+              System.out.println("Working Directory = " +
+              System.getProperty("user.dir"));
+            conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword);
+            stmt = conn.createStatement();
+            PreparedStatement company=conn.prepareStatement("LOAD DATA LOCAL INFILE ? INTO TABLE Company\n" +
+                    "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
+                    "LINES TERMINATED BY '\\n'\n" +
+                    ";");
+            company.setString(1,"'"+"test_data"+"/company.csv'");
+            company.executeQuery();
+            
+            PreparedStatement employee=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/employee.csv' INTO TABLE Employee\n" +
+                    "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
+                    "LINES TERMINATED BY '\\n'\n" +
+                    ";");
+            employee.setString(1,"'"+path+"/employee.csv'");
+            employee.executeQuery();
+            PreparedStatement employer=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/employer.csv' INTO TABLE Employer\n" +
+                    "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
+                    "LINES TERMINATED BY '\\n'\n" +
+                    ";");
+            
+            employer.setString(1,"'"+path+"/employer.csv'");
+            employer.executeQuery();
+            PreparedStatement position=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/position.csv' INTO TABLE _Position\n" +
+                    "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
+                    "LINES TERMINATED BY '\\n'\n" +
+                    "(Position_ID,Position_Title,Salary,Experience,Employer_ID,@Status)\n" +
+                    "SET Status = (@Status = 'TRUE');");
+            
+            position.setString(1, "'"+path+"/position.csv'");
+            position.executeQuery();
+            PreparedStatement emp_hist=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/history.csv' INTO TABLE Employment_History\n" +
+                    "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
+                    "LINES TERMINATED BY '\\n'\n" +
+                    ";");
+            emp_hist.setString(1, "'"+path+"/history.csv'");
+            emp_hist.executeQuery();
+            stmt.close();
+            return 1;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return -1;
+        }
     }
     public void admin_check_table() throws SQLException{
         conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
@@ -124,7 +137,7 @@ public class DBConnection {
            ResultSet pos= position.executeQuery();
            ResultSet hist= emp_hist.executeQuery();
            ResultSet mark= marked.executeQuery();
-           
+            
            if(com.next()){
            System.out.println("Company:"+com.getInt(1));
            }
@@ -146,11 +159,13 @@ public class DBConnection {
     }
     
     public void employee_check_ava(String employee_id)throws SQLException{
+
         //int Expected_Salary=0, Experience=0;
         //String Name,Skills;
         conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
         stmt = conn.createStatement();
        /* String psql_employee = "SELECT * FROM Employee WHERE Employee_ID=?";
+>>>>>>> a53ab958e732d6ba7e23d83d0c3fcdf26a74be73
         PreparedStatement pstmt1=conn.prepareStatement(psql_employee);
         pstmt1.setString(1,employee_id);
         ResultSet rs = pstmt1.executeQuery();
@@ -159,6 +174,19 @@ public class DBConnection {
             Expected_Salary = rs.getInt("Expected_Salary");
             Experience = rs.getInt("Experience");
             Skills = rs.getString("Skills");
+<<<<<<< HEAD
+            System.out.println("You are employee:"+Name+Expected_Salary+Experience+Skills+"\n");
+            
+        }
+        
+        //SELECT Position_ID,Position_Title,Salary FROM _Position NATURAL JOIN Employer NATURAL JOIN Company WHERE Status =? and Salary >=? and Experience <=?
+        String psql_position ="SELECT Position_ID,Position_Title,Salary,Company,Size,Founded FROM _Position NATURAL JOIN Employer NATURAL JOIN Company WHERE Status =? and Salary >=? and Experience <=?";
+        PreparedStatement pstmt2=conn.prepareStatement(psql_position);
+        pstmt2.setInt(1,1);
+        pstmt2.setInt(2,Expected_Salary);
+        pstmt2.setInt(3,Experience);
+        ResultSet rs2 = pstmt2.executeQuery();
+=======
         }
         */
         //SELECT Position_ID,Position_Title,Salary FROM _Position JOIN Employer NATURAL JOIN Company WHERE Status =? and Salary >=? and Experience <=?
@@ -170,6 +198,7 @@ public class DBConnection {
         ResultSet rs2 = pstmt2.executeQuery();
         System.out.println("Your available position are:");
     	System.out.println("Position_ID, Position_Title, Salary, Company, Size, Founded");
+
         while (rs2.next()){
             String Position_ID = rs2.getString("Position_ID");
             String Position_Title = rs2.getString("Position_Title");
@@ -177,6 +206,7 @@ public class DBConnection {
             String Company = rs2.getString("Company");
             int Size= rs2.getInt("Size");
             int Founded= rs2.getInt("Founded");
+
             System.out.println(Position_ID+","+Position_Title+","+ Salary+","+Company+","+Size+","+Founded);
             
         }
@@ -241,8 +271,30 @@ public class DBConnection {
         return returnvalue;
         //check the employee id is valid
     }
-    public void employee_avg_time(){
-        
-        //select avg
-    }
+
+    public void employee_avg_time(String employee_id){
+        try { 
+            conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword);
+            PreparedStatement totaldays = conn.prepareStatement("select DATEDIFF(End, Start) as totaldays from Employment_History where Employee_ID=? and End IS NOT NULL order by Convert(End,datetime) desc limit 3;");
+            totaldays.setString(1, employee_id);
+            ResultSet rs = totaldays.executeQuery();
+            int days=0;
+            int counter=0;
+           
+            while(rs.next())
+            {
+                counter++;
+                String vac=rs.getString("totaldays");
+                days+=Integer.parseInt(vac);
+            }
+            if(counter<3)
+            {
+                System.out.println("Not enough record(s) found");
+                return;
+            }
+            System.out.println("Your average working time is: "+days/counter+" days.");
+        } catch (SQLException ex) {
+            Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+}
 }
