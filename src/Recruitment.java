@@ -147,8 +147,13 @@ public class Recruitment {
     	String folder_path = reader.next();
         try {
             db = new DBConnection();
-            db.admin_load_data(System.getProperty("user.dir")+"/"+folder_path);
+            int successful_load=db.admin_load_data(System.getProperty("user.dir")+"/"+folder_path);
+            if(successful_load==1)
             System.out.println("Processing...Data is loaded!");
+            else
+            {
+               System.out.println("File not found."); 
+            }
             admin_menu();
         } catch (SQLException ex) {
             Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);

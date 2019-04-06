@@ -85,40 +85,40 @@ public class DBConnection {
                     "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
                     "LINES TERMINATED BY '\\n'\n" +
                     ";");
-            company.setString(1,"'"+"test_data"+"/company.csv'");
+            company.setString(1,path+"/company.csv");
             company.executeQuery();
             
-            PreparedStatement employee=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/employee.csv' INTO TABLE Employee\n" +
+            PreparedStatement employee=conn.prepareStatement("LOAD DATA LOCAL INFILE ? INTO TABLE Employee\n" +
                     "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
                     "LINES TERMINATED BY '\\n'\n" +
                     ";");
-            employee.setString(1,"'"+path+"/employee.csv'");
+            employee.setString(1,path+"/employee.csv");
             employee.executeQuery();
-            PreparedStatement employer=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/employer.csv' INTO TABLE Employer\n" +
+            PreparedStatement employer=conn.prepareStatement("LOAD DATA LOCAL INFILE ? INTO TABLE Employer\n" +
                     "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
                     "LINES TERMINATED BY '\\n'\n" +
                     ";");
             
-            employer.setString(1,"'"+path+"/employer.csv'");
+            employer.setString(1,path+"/employer.csv");
             employer.executeQuery();
-            PreparedStatement position=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/position.csv' INTO TABLE _Position\n" +
+            PreparedStatement position=conn.prepareStatement("LOAD DATA LOCAL INFILE ? INTO TABLE _Position\n" +
                     "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
                     "LINES TERMINATED BY '\\n'\n" +
                     "(Position_ID,Position_Title,Salary,Experience,Employer_ID,@Status)\n" +
                     "SET Status = (@Status = 'TRUE');");
             
-            position.setString(1, "'"+path+"/position.csv'");
+            position.setString(1,path+"/position.csv");
             position.executeQuery();
-            PreparedStatement emp_hist=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/history.csv' INTO TABLE Employment_History\n" +
+            PreparedStatement emp_hist=conn.prepareStatement("LOAD DATA LOCAL INFILE ? INTO TABLE Employment_History\n" +
                     "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
                     "LINES TERMINATED BY '\\n'\n" +
                     ";");
-            emp_hist.setString(1, "'"+path+"/history.csv'");
+            emp_hist.setString(1,path+"/history.csv");
             emp_hist.executeQuery();
             stmt.close();
             return 1;
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            
             return -1;
         }
     }
