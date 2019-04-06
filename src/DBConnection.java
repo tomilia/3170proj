@@ -77,13 +77,15 @@ public class DBConnection {
     }
     public int admin_load_data(String path) {
         try {
+              System.out.println("Working Directory = " +
+              System.getProperty("user.dir"));
             conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword);
             stmt = conn.createStatement();
             PreparedStatement company=conn.prepareStatement("LOAD DATA LOCAL INFILE ? INTO TABLE Company\n" +
                     "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
                     "LINES TERMINATED BY '\\n'\n" +
                     ";");
-            company.setString(1,"'"+path+"/company.csv'");
+            company.setString(1,"'"+"test_data"+"/company.csv'");
             company.executeQuery();
             
             PreparedStatement employee=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/employee.csv' INTO TABLE Employee\n" +

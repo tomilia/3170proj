@@ -147,7 +147,7 @@ public class Recruitment {
     	String folder_path = reader.next();
         try {
             db = new DBConnection();
-            db.admin_load_data(folder_path);
+            db.admin_load_data(System.getProperty("user.dir")+"/"+folder_path);
             System.out.println("Processing...Data is loaded!");
             admin_menu();
         } catch (SQLException ex) {
