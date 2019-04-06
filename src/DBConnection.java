@@ -157,11 +157,13 @@ public class DBConnection {
     }
     
     public void employee_check_ava(String employee_id)throws SQLException{
-        int Expected_Salary=0, Experience=0;
-        String Name,Skills;
+
+        //int Expected_Salary=0, Experience=0;
+        //String Name,Skills;
         conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
         stmt = conn.createStatement();
-        String psql_employee = "SELECT * FROM Employee WHERE Employee_ID=?";
+       /* String psql_employee = "SELECT * FROM Employee WHERE Employee_ID=?";
+>>>>>>> a53ab958e732d6ba7e23d83d0c3fcdf26a74be73
         PreparedStatement pstmt1=conn.prepareStatement(psql_employee);
         pstmt1.setString(1,employee_id);
         ResultSet rs = pstmt1.executeQuery();
@@ -170,6 +172,7 @@ public class DBConnection {
             Expected_Salary = rs.getInt("Expected_Salary");
             Experience = rs.getInt("Experience");
             Skills = rs.getString("Skills");
+<<<<<<< HEAD
             System.out.println("You are employee:"+Name+Expected_Salary+Experience+Skills+"\n");
             
         }
@@ -181,6 +184,19 @@ public class DBConnection {
         pstmt2.setInt(2,Expected_Salary);
         pstmt2.setInt(3,Experience);
         ResultSet rs2 = pstmt2.executeQuery();
+=======
+        }
+        */
+        //SELECT Position_ID,Position_Title,Salary FROM _Position JOIN Employer NATURAL JOIN Company WHERE Status =? and Salary >=? and Experience <=?
+        
+        String psql_position ="SELECT Position_ID,Position_Title,Salary,Company,Size,Founded FROM _Position p NATURAL JOIN Employer er NATURAL JOIN Company c JOIN Employee ee WHERE p.Status =? and p.Salary >=ee.Expected_Salary and p.Experience <=ee.Experience AND ee.Skills LIKE CONCAT('%', p.Position_Title, '%') AND Employee_ID=? ";
+        PreparedStatement pstmt2=conn.prepareStatement(psql_position);
+        pstmt2.setInt(1,1);
+        pstmt2.setString(2,employee_id);
+        ResultSet rs2 = pstmt2.executeQuery();
+        System.out.println("Your available position are:");
+    	System.out.println("Position_ID, Position_Title, Salary, Company, Size, Founded");
+
         while (rs2.next()){
             String Position_ID = rs2.getString("Position_ID");
             String Position_Title = rs2.getString("Position_Title");
@@ -188,17 +204,70 @@ public class DBConnection {
             String Company = rs2.getString("Company");
             int Size= rs2.getInt("Size");
             int Founded= rs2.getInt("Founded");
-            System.out.println(Position_ID+","+Position_Title+","+ Salary+Company+Size+Founded+"\n");
+
+            System.out.println(Position_ID+","+Position_Title+","+ Salary+","+Company+","+Size+","+Founded);
             
         }
-        System.out.println("Your available position are:\n");
-    	System.out.println("Position_ID, Position_Title, Salary Company, Size, Founded\n");
-         stmt.close();
+        stmt.close();
         //select
     }
-    public void employee_mark_pos(){
+    public int employee_mark_pos(String employee_id)throws SQLException{
+        int returnvalue=0;
+        conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
+        stmt = conn.createStatement();
+        String psql_position ="SELECT Position_ID,Position_Title,Salary,Company,Size,Founded FROM _Position p NATURAL JOIN Employer er NATURAL JOIN Company c JOIN Employee ee  "
+                + "WHERE p.Status =? and p.Salary >=ee.Expected_Salary and p.Experience <=ee.Experience AND ee.Skills LIKE CONCAT('%', p.Position_Title, '%') AND Employee_ID=? AND NOT c.Company = ANY (SELECT Company FROM Employment_History WHERE Employee_ID=?)"
+                + "AND NOT p.Position_ID = ANY(SELECT Position_ID FROM Marked WHERE Employee_ID=?)";
+        PreparedStatement pstmt=conn.prepareStatement(psql_position);
+        pstmt.setInt(1,1);
+        pstmt.setString(2,employee_id);
+        pstmt.setString(3,employee_id);
+        pstmt.setString(4,employee_id);
+        ResultSet rs = pstmt.executeQuery();
+        System.out.println("You interested poistions are:");
+    	System.out.println("Position_ID, Position_Title, Salary, Company, Size, Founded");
+        while (rs.next()){
+            String Position_ID = rs.getString("Position_ID");
+            String Position_Title = rs.getString("Position_Title");
+            int Salary= rs.getInt("Salary");
+            String Company = rs.getString("Company");
+            int Size= rs.getInt("Size");
+            int Founded= rs.getInt("Founded");
+            System.out.println(Position_ID+","+Position_Title+","+ Salary+","+Company+","+Size+","+Founded);   
+            returnvalue=1;
+        }
         
+      
+        stmt.close();
         //insert
+        return returnvalue;
+    }
+    public void insert_mark_pos(String position_id,String employee_id)throws SQLException{
+        
+        conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
+        stmt = conn.createStatement();
+        String psql_position ="INSERT INTO Marked(Position_ID,Employee_ID) VALUES (?,?) ";
+        PreparedStatement pstmt=conn.prepareStatement(psql_position);
+        pstmt.setString(1,position_id);
+        pstmt.setString(2,employee_id);
+        System.out.println("Done");
+        pstmt.executeUpdate();
+        stmt.close();
+    }
+    public int check_valid_employee(String employee_id)throws SQLException{
+        int returnvalue=0;
+        conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
+        stmt = conn.createStatement();
+        String psql_position ="SELECT * FROM Employee WHERE Employee_ID=?";
+        PreparedStatement pstmt=conn.prepareStatement(psql_position);
+        pstmt.setString(1,employee_id);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next())
+            returnvalue=1;
+        
+        stmt.close();
+        return returnvalue;
+        //check the employee id is valid
     }
 
     public void employee_avg_time(String employee_id){
@@ -225,7 +294,5 @@ public class DBConnection {
         } catch (SQLException ex) {
             Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        //select avg
-    }
+}
 }
