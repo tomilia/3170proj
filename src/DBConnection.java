@@ -85,77 +85,82 @@ public class DBConnection {
                     "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
                     "LINES TERMINATED BY '\\n'\n" +
                     ";");
-            company.setString(1,"'"+"test_data"+"/company.csv'");
+            company.setString(1,path+"/company.csv");
             company.executeQuery();
             
-            PreparedStatement employee=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/employee.csv' INTO TABLE Employee\n" +
+            PreparedStatement employee=conn.prepareStatement("LOAD DATA LOCAL INFILE ? INTO TABLE Employee\n" +
                     "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
                     "LINES TERMINATED BY '\\n'\n" +
                     ";");
-            employee.setString(1,"'"+path+"/employee.csv'");
+            employee.setString(1,path+"/employee.csv");
             employee.executeQuery();
-            PreparedStatement employer=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/employer.csv' INTO TABLE Employer\n" +
+            PreparedStatement employer=conn.prepareStatement("LOAD DATA LOCAL INFILE ? INTO TABLE Employer\n" +
                     "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
                     "LINES TERMINATED BY '\\n'\n" +
                     ";");
             
-            employer.setString(1,"'"+path+"/employer.csv'");
+            employer.setString(1,path+"/employer.csv");
             employer.executeQuery();
-            PreparedStatement position=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/position.csv' INTO TABLE _Position\n" +
+            PreparedStatement position=conn.prepareStatement("LOAD DATA LOCAL INFILE ? INTO TABLE _Position\n" +
                     "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
                     "LINES TERMINATED BY '\\n'\n" +
                     "(Position_ID,Position_Title,Salary,Experience,Employer_ID,@Status)\n" +
                     "SET Status = (@Status = 'TRUE');");
             
-            position.setString(1, "'"+path+"/position.csv'");
+            position.setString(1,path+"/position.csv");
             position.executeQuery();
-            PreparedStatement emp_hist=conn.prepareStatement("LOAD DATA LOCAL INFILE '?/history.csv' INTO TABLE Employment_History\n" +
+            PreparedStatement emp_hist=conn.prepareStatement("LOAD DATA LOCAL INFILE ? INTO TABLE Employment_History\n" +
                     "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'\n" +
                     "LINES TERMINATED BY '\\n'\n" +
                     ";");
-            emp_hist.setString(1, "'"+path+"/history.csv'");
+            emp_hist.setString(1,path+"/history.csv");
             emp_hist.executeQuery();
             stmt.close();
             return 1;
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            
             return -1;
         }
     }
-    public void admin_check_table() throws SQLException{
-        conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
-        stmt = conn.createStatement();
-                    PreparedStatement company = conn.prepareStatement("SELECT COUNT(*) FROM Company");
-                    PreparedStatement employee = conn.prepareStatement("SELECT COUNT(*) FROM Employee");
-                    PreparedStatement employer = conn.prepareStatement("SELECT COUNT(*) FROM Employer");
-                    PreparedStatement position = conn.prepareStatement("SELECT COUNT(*) FROM _Position");
-                    PreparedStatement emp_hist = conn.prepareStatement("SELECT COUNT(*) FROM Employment_History");
-                    PreparedStatement marked = conn.prepareStatement("SELECT COUNT(*) FROM Marked");
-           ResultSet com= company.executeQuery();
-           ResultSet empe= employee.executeQuery();
-           ResultSet empr= employer.executeQuery();
-           ResultSet pos= position.executeQuery();
-           ResultSet hist= emp_hist.executeQuery();
-           ResultSet mark= marked.executeQuery();
+    public void admin_check_table(){
+        try {
+            conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword);
+            stmt = conn.createStatement();
+            PreparedStatement company = conn.prepareStatement("SELECT COUNT(*) FROM Company");
+            PreparedStatement employee = conn.prepareStatement("SELECT COUNT(*) FROM Employee");
+            PreparedStatement employer = conn.prepareStatement("SELECT COUNT(*) FROM Employer");
+            PreparedStatement position = conn.prepareStatement("SELECT COUNT(*) FROM _Position");
+            PreparedStatement emp_hist = conn.prepareStatement("SELECT COUNT(*) FROM Employment_History");
+            PreparedStatement marked = conn.prepareStatement("SELECT COUNT(*) FROM Marked");
             
-           if(com.next()){
-           System.out.println("Company:"+com.getInt(1));
-           }
-           if(empe.next()){
-           System.out.println("Employee:"+empe.getInt(1));
-           }
-           if(empr.next()){
-           System.out.println("Employer:"+empr.getInt(1));
-           }
-           if(pos.next()){
-           System.out.println("Position:"+pos.getInt(1));
-           }
-           if(hist.next()){
-           System.out.println("Employment_History:"+hist.getInt(1));
-           }
-           if(mark.next()){
-           System.out.println("Marked:"+mark.getInt(1));
-           }
+            ResultSet com= company.executeQuery();
+            ResultSet empe= employee.executeQuery();
+            ResultSet empr= employer.executeQuery();
+            ResultSet pos= position.executeQuery();
+            ResultSet hist= emp_hist.executeQuery();
+            ResultSet mark= marked.executeQuery();
+            System.out.println("Number of records in each table:");
+            if(com.next()){
+                System.out.println("Company:"+com.getInt(1));
+            }
+            if(empe.next()){
+                System.out.println("Employee:"+empe.getInt(1));
+            }
+            if(empr.next()){
+                System.out.println("Employer:"+empr.getInt(1));
+            }
+            if(pos.next()){
+                System.out.println("Position:"+pos.getInt(1));
+            }
+            if(hist.next()){
+                System.out.println("Employment_History:"+hist.getInt(1));
+            }
+            if(mark.next()){
+                System.out.println("Marked:"+mark.getInt(1));
+            }
+        } catch (SQLException ex) {
+            System.out.println("Table not exist");
+        }
     }
     
     public void employee_check_ava(String employee_id)throws SQLException{
