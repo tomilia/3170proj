@@ -122,40 +122,45 @@ public class DBConnection {
             return -1;
         }
     }
-    public void admin_check_table() throws SQLException{
-        conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
-        stmt = conn.createStatement();
-                    PreparedStatement company = conn.prepareStatement("SELECT COUNT(*) FROM Company");
-                    PreparedStatement employee = conn.prepareStatement("SELECT COUNT(*) FROM Employee");
-                    PreparedStatement employer = conn.prepareStatement("SELECT COUNT(*) FROM Employer");
-                    PreparedStatement position = conn.prepareStatement("SELECT COUNT(*) FROM _Position");
-                    PreparedStatement emp_hist = conn.prepareStatement("SELECT COUNT(*) FROM Employment_History");
-                    PreparedStatement marked = conn.prepareStatement("SELECT COUNT(*) FROM Marked");
-           ResultSet com= company.executeQuery();
-           ResultSet empe= employee.executeQuery();
-           ResultSet empr= employer.executeQuery();
-           ResultSet pos= position.executeQuery();
-           ResultSet hist= emp_hist.executeQuery();
-           ResultSet mark= marked.executeQuery();
+    public void admin_check_table(){
+        try {
+            conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword);
+            stmt = conn.createStatement();
+            PreparedStatement company = conn.prepareStatement("SELECT COUNT(*) FROM Company");
+            PreparedStatement employee = conn.prepareStatement("SELECT COUNT(*) FROM Employee");
+            PreparedStatement employer = conn.prepareStatement("SELECT COUNT(*) FROM Employer");
+            PreparedStatement position = conn.prepareStatement("SELECT COUNT(*) FROM _Position");
+            PreparedStatement emp_hist = conn.prepareStatement("SELECT COUNT(*) FROM Employment_History");
+            PreparedStatement marked = conn.prepareStatement("SELECT COUNT(*) FROM Marked");
             
-           if(com.next()){
-           System.out.println("Company:"+com.getInt(1));
-           }
-           if(empe.next()){
-           System.out.println("Employee:"+empe.getInt(1));
-           }
-           if(empr.next()){
-           System.out.println("Employer:"+empr.getInt(1));
-           }
-           if(pos.next()){
-           System.out.println("Position:"+pos.getInt(1));
-           }
-           if(hist.next()){
-           System.out.println("Employment_History:"+hist.getInt(1));
-           }
-           if(mark.next()){
-           System.out.println("Marked:"+mark.getInt(1));
-           }
+            ResultSet com= company.executeQuery();
+            ResultSet empe= employee.executeQuery();
+            ResultSet empr= employer.executeQuery();
+            ResultSet pos= position.executeQuery();
+            ResultSet hist= emp_hist.executeQuery();
+            ResultSet mark= marked.executeQuery();
+            System.out.println("Number of records in each table:");
+            if(com.next()){
+                System.out.println("Company:"+com.getInt(1));
+            }
+            if(empe.next()){
+                System.out.println("Employee:"+empe.getInt(1));
+            }
+            if(empr.next()){
+                System.out.println("Employer:"+empr.getInt(1));
+            }
+            if(pos.next()){
+                System.out.println("Position:"+pos.getInt(1));
+            }
+            if(hist.next()){
+                System.out.println("Employment_History:"+hist.getInt(1));
+            }
+            if(mark.next()){
+                System.out.println("Marked:"+mark.getInt(1));
+            }
+        } catch (SQLException ex) {
+            System.out.println("Table not exist");
+        }
     }
     
     public void employee_check_ava(String employee_id)throws SQLException{

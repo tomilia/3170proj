@@ -152,7 +152,7 @@ public class Recruitment {
             System.out.println("Processing...Data is loaded!");
             else
             {
-               System.out.println("File not found."); 
+               System.out.println("File not found or table not exists."); 
             }
             admin_menu();
         } catch (SQLException ex) {
@@ -169,16 +169,18 @@ public class Recruitment {
     
     private void check_data () {
         
-    	System.out.println("Number of records in each table:");
-    	try {
+        try {
+            
+            
             db = new DBConnection();
             db.admin_check_table();
             admin_menu();
+            
+            
+            //call : check data (display the number of records of each tables
         } catch (SQLException ex) {
-            Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
-
-    	//call : check data (display the number of records of each tables
     	
     	
     }
