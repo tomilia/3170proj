@@ -4,12 +4,9 @@
  * and open the template in the editor.
  */
 import java.sql.*;
-<<<<<<< HEAD
 import java.util.Random; //¼È¥Î
-=======
 import java.util.logging.Level;
 import java.util.logging.Logger;
->>>>>>> bd8bf0f440831247be60363a6e53d273c4544f08
 /**
  *
  * @author tommylee
@@ -265,9 +262,7 @@ public class DBConnection {
         pstmt.executeUpdate();
         stmt.close();
     }
-<<<<<<< HEAD
-    
-    
+
     public void employer_post_rec(String employer_id,String position_title,int upper_salary,int required_experience) throws SQLException{
         
         conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
@@ -354,7 +349,6 @@ public class DBConnection {
         
     }
    
-=======
     public int check_valid_employee(String employee_id)throws SQLException{
         int returnvalue=0;
         conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
@@ -396,5 +390,4 @@ public class DBConnection {
             Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
 }
->>>>>>> bd8bf0f440831247be60363a6e53d273c4544f08
 }
