@@ -47,9 +47,9 @@ public class DBConnection {
             stmt.executeUpdate(employer);
     String position = "CREATE TABLE IF NOT EXISTS _Position(Position_ID VARCHAR(6),Position_Title VARCHAR(30),Salary Integer,Experience Integer,Employer_ID VARCHAR(6),Status BOOL DEFAULT TRUE,PRIMARY KEY(Position_ID),FOREIGN KEY (Employer_ID) REFERENCES Employer(Employer_ID) ON DELETE CASCADE ON UPDATE CASCADE) ;";
             stmt.executeUpdate(position);
-    String employment_hist = "CREATE TABLE IF NOT EXISTS Employment_History(Employee_ID VARCHAR(6),Company VARCHAR(30),Position_ID VARCHAR(6),Start DATE,End DATE,PRIMARY KEY(Position_ID),FOREIGN KEY (Company) REFERENCES Company(Company) ON DELETE CASCADE ON UPDATE CASCADE);";
+    String employment_hist = "CREATE TABLE IF NOT EXISTS Employment_History(Employee_ID VARCHAR(6),Company VARCHAR(30),Position_ID VARCHAR(6),Start DATE,End DATE,PRIMARY KEY(Position_ID),FOREIGN KEY (Company) REFERENCES Company(Company) ON DELETE CASCADE ON UPDATE CASCADE,FOREIGN KEY (Employee_ID) REFERENCES Employee(Employee_ID) ON DELETE CASCADE ON UPDATE CASCADE,FOREIGN KEY (Position_ID) REFERENCES _Position(Position_ID) ON DELETE CASCADE ON UPDATE CASCADE);";
             stmt.executeUpdate(employment_hist);
-    String marked = "CREATE TABLE IF NOT EXISTS Marked(Position_ID VARCHAR(6),Employee_ID VARCHAR(6),Status BOOL DEFAULT TRUE,PRIMARY KEY(Position_ID,Employee_ID),FOREIGN KEY (Position_ID) REFERENCES _Position(Position_ID) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY (Employee_ID) REFERENCES Employee(Employee_ID) ON DELETE CASCADE ON UPDATE CASCADE);";
+    String marked = "CREATE TABLE IF NOT EXISTS Marked(Position_ID VARCHAR(6),Employee_ID VARCHAR(6),Status BOOL DEFAULT FALSE,PRIMARY KEY(Position_ID,Employee_ID),FOREIGN KEY (Position_ID) REFERENCES _Position(Position_ID) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY (Employee_ID) REFERENCES Employee(Employee_ID) ON DELETE CASCADE ON UPDATE CASCADE);";
             stmt.executeUpdate(marked);
     stmt.close();
     }
@@ -250,6 +250,38 @@ public class DBConnection {
         //insert
         return returnvalue;
     }
+    public String check_posid_valid(){
+        int counter=0;
+        while(true)
+        {
+        try {
+            Random rand = new Random();
+            String expected_position_id=String.valueOf("pid"+rand.nextInt(999));
+            String count_Pos = "SELECT COUNT(*) FROM _Position where Position_ID=?";
+            
+            PreparedStatement pstmtx = conn.prepareStatement(count_Pos);
+            pstmtx.setString(1, expected_position_id);
+            ResultSet rs=pstmtx.executeQuery();
+            if(rs.next())
+            {
+                int hasCollide=rs.getInt(1);
+                System.out.println("hasCol:"+hasCollide);
+                if(hasCollide==0)
+                    return expected_position_id;
+                
+            }
+            else{
+                
+            }
+            
+        } catch (SQLException ex) {
+            
+        }
+        
+        }
+       
+        
+    }
     public void insert_mark_pos(String position_id,String employee_id)throws SQLException{
         
         conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
@@ -272,7 +304,7 @@ public class DBConnection {
         
         PreparedStatement pstmt = conn.prepareStatement(countEmployee);
         
-        Random rand = new Random();
+        
         pstmt.setInt(1, upper_salary);
         pstmt.setInt(2, required_experience);
         pstmt.setString(3,  position_title);
@@ -281,15 +313,17 @@ public class DBConnection {
         if(!(number.next()) || number.getInt(1) == 0) {
         	System.out.println("ERROR MESSAGE");
         }
+        
         else {
-     
+            String pos_id=check_posid_valid();
+        
         	 String insertPost = "INSERT INTO _Position (Employer_ID, Position_Title, Salary, Experience, Status, Position_ID) VALUES (?,?,?,?,1,?)";
              PreparedStatement pstmt2 = conn.prepareStatement(insertPost);
              pstmt2.setString(1, employer_id);
              pstmt2.setString(2, position_title);
              pstmt2.setInt(3,upper_salary);
              pstmt2.setInt(4, required_experience);
-             pstmt2.setString(5, String.valueOf(rand.nextInt(999999))); 
+             pstmt2.setString(5, pos_id); 
              pstmt2.executeUpdate();
              System.out.println(number.getInt(1)+" potential employees are found. The position recruiment is posted.");
     	}
