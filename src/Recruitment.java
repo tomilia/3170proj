@@ -147,8 +147,13 @@ public class Recruitment {
     	String folder_path = reader.next();
         try {
             db = new DBConnection();
-            db.admin_load_data();
+            int successful_load=db.admin_load_data(System.getProperty("user.dir")+"/"+folder_path);
+            if(successful_load==1)
             System.out.println("Processing...Data is loaded!");
+            else
+            {
+               System.out.println("File not found or table not exists."); 
+            }
             admin_menu();
         } catch (SQLException ex) {
             Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
@@ -164,16 +169,18 @@ public class Recruitment {
     
     private void check_data () {
         
-    	System.out.println("Number of records in each table:");
-    	try {
+        try {
+            
+            
             db = new DBConnection();
             db.admin_check_table();
             admin_menu();
+            
+            
+            //call : check data (display the number of records of each tables
         } catch (SQLException ex) {
-            Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
-
-    	//call : check data (display the number of records of each tables
     	
     	
     }
@@ -199,6 +206,7 @@ public class Recruitment {
             checkvalid=db.check_valid_employee(employee_id);
         } catch (SQLException ex) {
             Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+
         }
         if(checkvalid==1){
             try {   
@@ -288,13 +296,17 @@ public class Recruitment {
     private void check_average_working_time() {
     	System.out.println("Please enter your ID.");
     	while (true) {
-    		try {
-    			String temp = reader.next();
-    			int employee_id = Integer.parseInt(temp);
+                try {
+                    String temp = reader.next();
+                    String employee_id = temp;
+                    db = new DBConnection();
+                    db.employee_avg_time(employee_id);
+                }
+                     catch (SQLException ex) {
+                    Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+                }   
     			break;
-    		} catch (NumberFormatException e) {
-        		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
-        	}
+    		
     	}
     	// (if => 3 records)
     	// System.out.print("You average working time is: .");
