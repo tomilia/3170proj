@@ -263,7 +263,7 @@ public class DBConnection {
         stmt.close();
     }
 
-    public void employer_post_rec(String employer_id,String position_title,int upper_salary,int required_experience) throws SQLException{
+    public void employer_post_rec(String employer_id,String position_title,int upper_salary,int required_experience) throws SQLException{ //DONE
         
         conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
         stmt = conn.createStatement();
@@ -311,23 +311,72 @@ public class DBConnection {
         }
     }
     
-    public void employer_show_employee_interested(String picked_position_id) throws SQLException { //DONE!!!!!!!!!!
+    public int employer_show_employee_interested(String picked_position_id) throws SQLException { //DONE!!!!!!!!!!
+    	
+    	int have = 0;
     	conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
         stmt = conn.createStatement();
         String showEmployee_interested = "SELECT E.* FROM Marked M, Employee E WHERE M.Position_ID = ? AND M.Employee_ID = E.Employee_ID";
         PreparedStatement pstmt = conn.prepareStatement(showEmployee_interested);
         pstmt.setString(1,picked_position_id);
         ResultSet interested_Employee = pstmt.executeQuery();
-        while(interested_Employee.next()) {
+        while (interested_Employee.next()) {
+        		if (have == 0) {
+        			System.out.println("The employees who mark interested in this position recruitment are:");
+        			System.out.println("Employee_ID,Name,Expected_Salary,Experience,Skills");
+        		}
+        		
         	System.out.print(interested_Employee.getString(1)+", ");
         	System.out.print(interested_Employee.getString(2)+", ");
         	System.out.print(interested_Employee.getInt(3)+", ");
         	System.out.print(interested_Employee.getInt(4)+", ");
         	System.out.println(interested_Employee.getString(5));
+        	System.out.println("Please pick one employee by Employee_ID.");
+        	have = 1;
         }
+        if (have ==0 ) {
+        	System.out.print("No Employees mark interested in this position recruitment\n");
+        	return 0;
+        }
+        
+        return 1;
         
     }
     
+    public void employer_change_mark_status(String picked_employee_id)  throws SQLException {
+    	conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
+        stmt = conn.createStatement();
+        String updateMark = "UPDATE Marked SET Status = 1 WHERE Employee_ID = ?";
+        PreparedStatement pstmt = conn.prepareStatement(updateMark);
+        pstmt.setString(1, picked_employee_id);
+        pstmt.executeUpdate();
+    }
+    
+<<<<<<< HEAD
+    public void employer_createRecord(String employer_id,String hire_employee_id) throws SQLException {
+    	conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
+        stmt = conn.createStatement();
+        String theCompany ="";
+        String searchCompany = "SELECT Company FROM Employer E WHERE E.Employer_ID = ?";
+        PreparedStatement pstmt = conn.prepareStatement(searchCompany);
+        pstmt.setString(1, employer_id);
+        ResultSet resultCompany = pstmt.executeQuery();
+        if (resultCompany.next()) {
+        	theCompany = resultCompany.getString(1);
+        }
+
+        
+        String createRecord = "INSERT INTO Employment_History VALUES (?,?,?,?,NULL)";
+        PreparedStatement pstmt2 = conn.prepareStatement(createRecord);
+        pstmt2.setString(1,hire_employee_id);
+        pstmt2.setString(2, theCompany);
+        pstmt2.setDate(4, new java.sql.Date(System.currentTimeMillis()));
+        
+    }
+   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+=======
+>>>>>>> 233c44e97c918f106cd6194ce3b59274323f38ba
     public int check_valid_employee(String employee_id)throws SQLException{
         int returnvalue=0;
         conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
