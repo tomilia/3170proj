@@ -268,7 +268,8 @@ public class DBConnection {
         conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
         stmt = conn.createStatement();
         //required_experience default -> 0                           If employee haven't worked , it will not count , but we should count
-        String countEmployee = "SELECT COUNT(DISTINCT E.Employee_ID) FROM Employee E , Employment_History H WHERE E.Employee_ID = H.Employee_ID AND H.End IS NOT NULL AND E.Expected_Salary <= ? AND E.Experience >= ? AND E.Skills LIKE CONCAT('%' , ? , '%')"; 
+        String countEmployee = "SELECT COUNT(*) FROM Employee E WHERE E.Employee_ID NOT IN (SELECT Employee_ID FROM Employment_History WHERE End IS NULL) AND E.Expected_Salary <= ? AND E.Experience >= ? AND E.Skills LIKE CONCAT ('%' , ? , '%')";
+        
         PreparedStatement pstmt = conn.prepareStatement(countEmployee);
         
         Random rand = new Random();
@@ -281,17 +282,16 @@ public class DBConnection {
         	System.out.println("ERROR MESSAGE");
         }
         else {
-        	 
-        	//無ERROR 但未insert到!!!!!!!!!!!!!!!!!!!!
-        	String insertPost = "INSERT INTO _Position (Employer_ID, Position_Title, Salary, Experience, Status, Position_ID) VALUES (?,?,?,?,1,?)";
+     
+        	 String insertPost = "INSERT INTO _Position (Employer_ID, Position_Title, Salary, Experience, Status, Position_ID) VALUES (?,?,?,?,1,?)";
              PreparedStatement pstmt2 = conn.prepareStatement(insertPost);
              pstmt2.setString(1, employer_id);
              pstmt2.setString(2, position_title);
              pstmt2.setInt(3,upper_salary);
              pstmt2.setInt(4, required_experience);
-             pstmt2.setInt(5, rand.nextInt(999999)); //暫用去 random 個position_id
-             
-        	System.out.println(number.getInt(1)+" potential employees are found. The position recruiment is posted.");
+             pstmt2.setString(5, String.valueOf(rand.nextInt(999999))); //未CHECK有無撞
+             pstmt2.executeUpdate();
+             System.out.println(number.getInt(1)+" potential employees are found. The position recruiment is posted.");
     	}
     	
     		
