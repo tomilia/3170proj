@@ -324,6 +324,7 @@ public class DBConnection {
              pstmt2.setInt(3,upper_salary);
              pstmt2.setInt(4, required_experience);
              pstmt2.setString(5, pos_id); 
+
              pstmt2.executeUpdate();
              System.out.println(number.getInt(1)+" potential employees are found. The position recruiment is posted.");
     	}
@@ -362,27 +363,6 @@ public class DBConnection {
         
     }
     
-    public void employer_createRecord(String employer_id,String hire_employee_id) throws SQLException {
-    	conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
-        stmt = conn.createStatement();
-        String theCompany ="";
-        String searchCompany = "SELECT Company FROM Employer E WHERE E.Employer_ID = ?";
-        PreparedStatement pstmt = conn.prepareStatement(searchCompany);
-        pstmt.setString(1, employer_id);
-        ResultSet resultCompany = pstmt.executeQuery();
-        if (resultCompany.next()) {
-        	theCompany = resultCompany.getString(1);
-        }
-
-        
-        String createRecord = "INSERT INTO Employment_History VALUES (?,?,?,?,NULL)";
-        PreparedStatement pstmt2 = conn.prepareStatement(createRecord);
-        pstmt2.setString(1,hire_employee_id);
-        pstmt2.setString(2, theCompany);
-        pstmt2.setDate(4, new java.sql.Date(System.currentTimeMillis()));
-        
-    }
-   
     public int check_valid_employee(String employee_id)throws SQLException{
         int returnvalue=0;
         conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
@@ -445,5 +425,66 @@ public class DBConnection {
         } catch (SQLException ex) {
             Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-}
+    }
+    //wayne
+    public void accept_employee(String employer_id,String employee_id)throws SQLException{
+        String company ="";
+        String position_id ="";
+        Date date=new java.sql.Date(System.currentTimeMillis());
+        conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
+        stmt = conn.createStatement();
+        String psql ="SELECT * FROM Employer WHERE Employer_ID=?";
+        PreparedStatement pstmt=conn.prepareStatement(psql);
+        pstmt.setString(1,employer_id);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+        	company = rs.getString("Company");
+        }
+        String psql2 ="SELECT m.Position_ID FROM Marked m NATURAL JOIN _Position p WHERE m.Status=? AND p.Employer_ID=? AND m.Employee_ID=?";
+        PreparedStatement pstmt2=conn.prepareStatement(psql2);
+        pstmt2.setInt(1,1);
+        pstmt2.setString(2,employer_id);
+        pstmt2.setString(3,employee_id);
+        ResultSet rs2 = pstmt2.executeQuery();
+        
+        if (rs2.next()) {
+        	position_id = rs2.getString(1);
+        }
+        
+        
+        String createRecord = "INSERT INTO Employment_History VALUES (?,?,?,?,NULL)";
+        PreparedStatement pstmt3 = conn.prepareStatement(createRecord);
+        pstmt3.setString(1,employee_id);
+        pstmt3.setString(2, company);
+        pstmt3.setString(3, position_id);
+        pstmt3.setDate(4, date);
+        pstmt3.executeUpdate();
+         
+    	System.out.println("An Employment History record is created, details are:");
+    	System.out.println("Employee_ID, Company, Position_ID, Start, End");
+        System.out.println(employee_id+","+company+","+position_id+","+date+",NULL");
+        String updateRecord = "UPDATE _Position SET Status = 0 WHERE Position_ID =? ";
+        PreparedStatement pstmt4 = conn.prepareStatement(updateRecord);
+        pstmt4.setString(1,position_id);
+        pstmt4.executeUpdate();
+        
+        stmt.close();
+    }
+    public int check_valid_accept(String employer_id,String employee_id)throws SQLException{
+        conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
+        //stmt = conn.createStatement();
+        String psql2 ="SELECT m.Position_ID FROM Marked m NATURAL JOIN _Position p WHERE m.Status=? AND p.Employer_ID=? AND m.Employee_ID=?";
+        PreparedStatement pstmt2=conn.prepareStatement(psql2);
+        pstmt2.setInt(1,1);
+        pstmt2.setString(2,employer_id);
+        pstmt2.setString(3,employee_id);
+        ResultSet rs2 = pstmt2.executeQuery();
+        
+        if (rs2.next()) {
+            pstmt2.close();
+            return 1;
+        }
+        pstmt2.close();
+        return 0;
+    }
 }
