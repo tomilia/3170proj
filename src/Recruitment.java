@@ -193,16 +193,13 @@ public class Recruitment {
         		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
         	}
     	}
-        while (true){
-            try {   
-                db = new DBConnection();
-                checkvalid=db.check_valid_employee(employee_id);
-                break;
-            } catch (SQLException ex) {
-                Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
-            }
+       
+        try {   
+            db = new DBConnection();
+            checkvalid=db.check_valid_employee(employee_id);
+        } catch (SQLException ex) {
+            Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
         if(checkvalid==1){
             try {   
                 db.employee_check_ava(employee_id);
@@ -213,37 +210,35 @@ public class Recruitment {
     	// call : show available positions
         }
         else{
-            System.out.println("[ERROR] no employee found.\n");
+            System.out.println("[ERROR] No employee found.\n");
             employee_menu();
         }
             
     }
     
     private void mark_interested_position() {
-        int returnvalue=0;
-        int checkvalid=0;
+        int returnvalue=0,checkemployee=0,checkposition=0;
     	System.out.println("Please enter your ID.");
         String employee_id,position_id;
     	while (true) {
     		try {
-    			employee_id = reader.next();
+    	            employee_id = reader.next();
     		         
-    			break;
+    		    break;
     		}
     		catch (NumberFormatException e) {
         		System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
         	}
     	}
-        while (true){
-            try {   
-                db = new DBConnection();
-                checkvalid=db.check_valid_employee(employee_id);
-                break;
-            } catch (SQLException ex) {
-                Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        
+        try {   
+            db = new DBConnection();
+            checkemployee=db.check_valid_employee(employee_id);
+        } catch (SQLException ex) {
+            Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if(checkvalid==1){
+        
+        if(checkemployee==1){
             try {   
                 db = new DBConnection();
                 returnvalue=db.employee_mark_pos(employee_id);
@@ -252,7 +247,6 @@ public class Recruitment {
             }
             if(returnvalue==1){
                 System.out.println("Please one interested position id:");
-        
                 while (true) {
                     try {
                         position_id = reader.next();
@@ -263,23 +257,30 @@ public class Recruitment {
         		System.out.println("[ERROR] Invalid input.\nPlease enter your position ID.");
                     }
                 }
-  
                 try {   
-                     db.insert_mark_pos(position_id,employee_id);
-                    employee_menu();
+                    db = new DBConnection();
+                    checkposition=db.check_valid_position(employee_id,position_id);
+                        
                 } catch (SQLException ex) {
                     Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                
+                if(checkposition==1){
+                    try {   
+                        db.insert_mark_pos(position_id,employee_id);
+                        employee_menu();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                else
+                    System.out.println("[ERROR] Invalid position ID.\n");
             }
         }
         else{
-            System.out.println("[ERROR] no employee found.\n");
-            employee_menu();
+            System.out.println("[ERROR] No employee found.\n");
         }
-    
-    	
     	// call : show all positions that the employee may be interested
-    	
     	employee_menu();
     	
     }

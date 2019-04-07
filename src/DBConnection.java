@@ -241,6 +241,27 @@ public class DBConnection {
         return returnvalue;
         //check the employee id is valid
     }
+     public int check_valid_position(String employee_id,String position_id)throws SQLException{
+        int returnvalue=0;
+        conn = DriverManager.getConnection(dbURL,dbUsername,dbPassword); 
+        stmt = conn.createStatement();
+        String psql_position ="SELECT * FROM _Position p NATURAL JOIN Employer er NATURAL JOIN Company c JOIN Employee ee  "
+                + "WHERE p.Status =? and p.Salary >=ee.Expected_Salary and p.Experience <=ee.Experience AND ee.Skills LIKE CONCAT('%', p.Position_Title, '%') AND Employee_ID=? AND NOT c.Company = ANY (SELECT Company FROM Employment_History WHERE Employee_ID=?)"
+                + "AND NOT p.Position_ID = ANY(SELECT Position_ID FROM Marked WHERE Employee_ID=?) AND p.Position_ID=?";
+        PreparedStatement pstmt=conn.prepareStatement(psql_position);
+        pstmt.setInt(1,1);
+        pstmt.setString(2,employee_id);
+        pstmt.setString(3,employee_id);
+        pstmt.setString(4,employee_id);
+        pstmt.setString(5,position_id);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next())
+            returnvalue=1;
+        
+        stmt.close();
+        return returnvalue;
+        //check the employee id is valid
+    }
     public void employee_avg_time(){
         
         //select avg
