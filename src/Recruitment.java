@@ -385,6 +385,7 @@ public class Recruitment {
 	
     
     private void check_empolyees_and_arrange_an_interview() {
+    	int nextstep = 0;
     	System.out.println("Please enter your ID.");
     	String employer_id = reader.next();
     	//while(true) {
@@ -420,63 +421,46 @@ public class Recruitment {
         	//}
     	//}
     	
-    	
-    	System.out.println("The employees who mark interested in this position recruitment are:");
-    	System.out.println("Employee_ID,Name,Expected_Salary,Experience,Skills");
+
     	
     	// show the employees who mark interested in picked_position_id
     	try {
         	db = new DBConnection();
-            db.employer_show_employee_interested(picked_position_id);
+            nextstep = db.employer_show_employee_interested(picked_position_id);
         	}
         	catch (SQLException ex) {
                 Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
             }
     	
     	
-    	System.out.println("Please pick one employee by Employee_ID.");
-
-    	while(true) {
-    		try {
-    			String temp = reader.next();
-    			int picked_employee_id = Integer.parseInt(temp);
-    			break;
-    		} catch (NumberFormatException e) {
-        		System.out.println("[ERROR] Invalid input.\nPlease pick one employee by Employee_ID.");
-        	}
-    	}
-    	System.out.println("An IMMEDIATE interview has done.");
+    			if (nextstep == 1) {
+    				String picked_employee_id = reader.next();
+    				try {
+    					db = new DBConnection();
+    					db.employer_change_mark_status(picked_employee_id);
+    				}
+    				catch (SQLException ex) {
+    	                Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+    	            }
+    				System.out.println("An IMMEDIATE interview has done.");
+    			}
+    			
+    			   	
+    	
+    	
     	employer_menu();
     	
+
     }
 
     private void accept_an_employee() {
     	System.out.println("Please enter your ID.");
     	String employer_id = reader.next();
-    	//while(true) {
-    //		try {
-    //			String temp = reader.next();
-    	//		int employer_id = Integer.parseInt(temp);
-    		//	break;
-    		//}catch (NumberFormatException e) {
-        	//	System.out.println("[ERROR] Invalid input.\nPlease enter your ID.");
-        	//}
-    	//}
     	
     	System.out.println("Please enter the Employee_ID you want to hire.");
     	String hire_employee_id = reader.next();
-    	//while(true) {
-    		//try {
-    			//String temp = reader.next();
-    			//int hire_employee_id = Integer.parseInt(temp);
-    			//break;
-    		//}catch (NumberFormatException e) {
-        	//	System.out.println("[ERROR] Invalid input.\nPlease enter the Employee_ID you want to hire.");
-        //	}
-    	//}
     	
     	// check whether the employee is suitable or not 未諗到
-    	
     	
     	// (if OK)
     	System.out.println("An Employment History record is created, details are:");
@@ -488,7 +472,7 @@ public class Recruitment {
         	catch (SQLException ex) {
                 Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
             }
-    	// show the hire
+    	// show the hire 另一個FUNCTION
     	
     	// (if no OK)
     	// System.out.println("ERROR");
