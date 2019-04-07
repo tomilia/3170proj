@@ -475,8 +475,6 @@ public class Recruitment {
         //	}
     	//}
     	
-    	// check whether the employee is suitable or not •ºÁ‹®Ï
-    	
     	
     	// (if OK)
     	System.out.println("An Employment History record is created, details are:");

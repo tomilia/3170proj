@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 import java.sql.*;
-import java.util.Random; //暫用
+import java.util.Random; 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 /**
@@ -289,7 +289,7 @@ public class DBConnection {
              pstmt2.setString(2, position_title);
              pstmt2.setInt(3,upper_salary);
              pstmt2.setInt(4, required_experience);
-             pstmt2.setString(5, String.valueOf(rand.nextInt(999999))); //未CHECK有無撞
+             pstmt2.setString(5, String.valueOf(rand.nextInt(999999))); 
              pstmt2.executeUpdate();
              System.out.println(number.getInt(1)+" potential employees are found. The position recruiment is posted.");
     	}
