@@ -270,9 +270,8 @@ public class Recruitment {
                     checkposition=db.check_valid_position(employee_id,position_id);
                         
                 } catch (SQLException ex) {
-                    Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println("No valid position");
                 }
-                System.out.println("check_pos:"+checkposition);
                 if(checkposition==1){
                     try {   
                         db.insert_mark_pos(position_id,employee_id);
@@ -452,6 +451,7 @@ public class Recruitment {
     }
 
     private void accept_an_employee() {
+        int checkvalid=0;
     	System.out.println("Please enter your ID.");
     	String employer_id = reader.next();
     	//while(true) {
@@ -480,15 +480,24 @@ public class Recruitment {
     	
     	
     	// (if OK)
-    	System.out.println("An Employment History record is created, details are:");
-    	System.out.println("Employee_ID, Company, Position_ID, Start, End");
-    	try {
-        	db = new DBConnection();
-            db.employer_createRecord(employer_id,hire_employee_id);
-        	}
-        	catch (SQLException ex) {
+        try {   
+            db = new DBConnection();
+            checkvalid=db.check_valid_accept(employer_id,hire_employee_id);
+        } catch (SQLException ex) {
+            Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
+
+        }
+        if(checkvalid==1){
+            try {
+                db.accept_employee(employer_id,hire_employee_id);
+            }
+            catch (SQLException ex) {
                 Logger.getLogger(Recruitment.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        else{
+            System.out.println("[ERROR] Invalid employer id or employee id.");
+        }
     	// show the hire
     	
     	// (if no OK)
